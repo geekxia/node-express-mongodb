@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>首页</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <style media="screen">
+      .row {
+        line-height: 30px;
+        border-bottom: 1px solid gray;
+      }
+      .row>span {
+        display: inline-block;
+        border-right: 1px solid gray;
+        text-align: center;
+      }
+      .row>span:nth-child(1) {
+        width: 50px;
+      }
+      .row>span:nth-child(2) {
+        width: 150px;
+      }
+      .row>span:nth-child(3) {
+        width: 100px;
+      }
+      .row>span:nth-child(4) {
+        width: 150px;
+      }
+      .pages a {
+        display: inline-block;
+        padding: 10px 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('header', {username: username}) %>
+    <h3>首页 文章列表页</h3>
+
+    <a href="/article/add">写文章</a>
+    <br>
+    <br>
+    <br>
+
+    <div class="row">
+      <span>序号</span>
+      <span>标题</span>
+      <span>发布人</span>
+      <span>时间</span>
+    </div>
+    <% data.list.map(function(ele, index) {%>
+      <div class="row">
+        <span><%= index+1 %></span>
+        <span><a href="/article/detail?time=<%= ele.time %>"><%= ele.title %></a></span>
+        <span><%= ele.username %></span>
+        <span><%= ele.timeZH %></span>
+      </div>
+    <%})%>
+
+    <div class='pages'>
+      <% for(let i=1; i<=data.total; i++) {%>
+        <a href="?page=<%=i%>"><%= i %></a>
+      <%}%>
+    </div>
+  </body>
+</html>

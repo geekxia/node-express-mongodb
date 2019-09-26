@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>写文章</title>
+</head>
+<body>
+
+  <%- include('header', {username: username}) %>
+  <h3>写文章</h3>
+
+
+  <form class="" action="/article/publish" method="post">
+    <label for="">
+      文章标题：<input type="text" name='title' value="">
+    </label>
+    <br>
+    <br>
+    <div>文章内容：</div>
+    <textarea name="content" rows="8" cols="100" value=''></textarea>
+    <br>
+    <input type="submit" value="发布">
+  </form>
+
+</body>
+</html>
