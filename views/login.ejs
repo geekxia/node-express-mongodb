@@ -1,28 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
   <title>登录页</title>
+  <%- include head %>
 </head>
 <body>
-  <h3>登录页面</h3>
 
-  <form  action="/users/login" method="post">
-    <label for="">
-      用户名：<input type="text" name='username' value="">
-    </label>
-    <br>
-    <label for="">
-      密  码：<input type="text" name='password' value="">
-    </label>
-    <br>
-    <input type="submit" name="" value="登录">
-  </form>
-  <br>
-  <div>
-    还没有账号，<a href="/regist">立即注册</a>！
+  <div class="form-box">
+    <form  action="/users/login" method="post">
+      <input type="text" name='username' value="" placeholder="用户名">
+      <input type="password" name='password' value="" placeholder="密 码">
+      <input type="submit" name="" value="登 录">
+    </form>
+    <div>
+      还没有账号，<a href="/regist">立即注册</a>！
+    </div>
   </div>
 </body>
 </html>
