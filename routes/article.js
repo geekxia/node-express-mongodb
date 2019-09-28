@@ -1,113 +1,85 @@
 var express = require('express');
 var router = express.Router();
 var model = require('../model');
-var moment = require('moment');
+/* GET users listing. */
+
 var multiparty = require('multiparty');
-// var upload = multer({ dest: '/uploads/' })
 var fs = require('fs');
 
-/* GET home page. */
-router.get('/writing', function(req, res, next) {
-  var time = req.query.time
-  console.log('写文章页面', time)
-  if (time) {
-    time = parseInt(time)
-    model.connect(function(db) {
-      db.collection('articles').findOne({time: time}, function(err, docs) {
-        console.log('docs', docs)
-        docs.timeZH = moment(docs.time).format('YYYY-MM-DD HH:mm:ss')
-        res.render('writing', {username: req.session.username, item: docs})
-      })
-    })
-  } else {
-    var item = {
-      time: '',
-      title: '',
-      content: ''
-    }
-    res.render('writing', { username: req.session.username, item: item });
-  }
-});
 
-// 发布文章
-router.post('/publish', function(req, res, next) {
-  var time = req.body.time
-  var data = {
-    username: req.session.username,
-    title: req.body.title,
-    content: req.body.content,
-  }
-  if (time) {  // 编辑
-    data.time = parseInt(time)
-    model.connect(function(db){
-      db.collection('articles').updateOne({time: data.time}, {$set: {
-        title: data.title,
-        content: data.content
+// 新增、编辑
+router.post('/add', function(req, res, next) {
+  var id = parseInt(req.body.id)
+  if (id) {  // 编辑
+    var page = req.body.page
+    var title = req.body.title
+    var content = req.body.content
+    model.connect(function(db) {
+      db.collection('articles').updateOne({id: id}, {$set: {
+        title: title,
+        content: content
       }}, function(err, ret) {
         if (err) {
-          console.log(err)
+          console.log('修改失败', err)
         } else {
-          // 修改成功
+          console.log('修改成功')
+          res.redirect('/?page='+page)
+        }
+      })
+    })
+  } else {   // 新增
+    var data = {
+      title: req.body.title,
+      content: req.body.content,
+      username: req.session.username,
+      id: Date.now()
+    }
+    model.connect(function(db) {
+      db.collection('articles').insertOne(data, function(err, ret) {
+        if(err) {
+          console.log('文件发布失败', err)
+          res.redirect('/write')
+        } else {
           res.redirect('/')
         }
       })
     })
-  } else {  // 添加
-    data.time = Date.now()
-    // 执行文章存储
-    model.connect(function(db) {
-      db.collection('articles').insertOne(data)
-      res.redirect('/')
-    })
   }
-
-  // res.send(data)
-});
+})
 
 // 删除文章
 router.get('/delete', function(req, res, next) {
-  var time = parseInt(req.query.time)
+  var id = parseInt(req.query.id)
+  var page = req.query.page
   model.connect(function(db) {
-    db.collection('articles').deleteOne({time: time}, function(err) {
+    db.collection('articles').deleteOne({id: id}, function(err, ret) {
       if (err) {
-        console.log(err)
+        console.log('删除失败')
       } else {
         console.log('删除成功')
-        res.redirect('/')
       }
+      res.redirect('/?page='+page)
     })
   })
 })
 
 
-// 详情页
-router.get('/detail', function(req, res, next) {
-  var time = parseInt(req.query.time)
-  model.connect(function(db) {
-    db.collection('articles').findOne({time: time}, function(err, docs) {
-      console.log('docs', docs)
-      docs.timeZH = moment(docs.time).format('YYYY-MM-DD HH:mm:ss')
-      res.render('detail', {username: req.session.username, item: docs})
-    })
-  })
-})
-// 图片上传
 router.post('/upload', function(req, res, next) {
-  var form = new multiparty.Form();
+  var form = new multiparty.Form()
   form.parse(req, function(err, fields, files) {
     if (err) {
-      console.log('文件上传错误：', err)
+      console.log('上传失败', err);
     } else {
-      console.log('fields', fields)
+      console.log('文件列表', files)
       var file = files.filedata[0]
-      console.log(file)
-      // return
-      var newPath = '/upload/'+file.originalFilename
-      var frs = fs.createReadStream(file.path)
-      var fws = fs.createWriteStream('./public'+newPath)
-      frs.pipe(fws)
-      fws.on('close', function() {
-        res.send('{"err":"","msg":"'+newPath+'"}')
+
+      var rs = fs.createReadStream(file.path)
+      var newPath = '/uploads/' + file.originalFilename
+      var ws = fs.createWriteStream('./public' + newPath)
+      rs.pipe(ws)
+      ws.on('close', function() {
+        console.log('文件上传成功')
+        res.send({err: '', msg: newPath})
       })
     }
   })

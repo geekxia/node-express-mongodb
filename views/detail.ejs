@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <title>详情页</title>
   <%- include head %>
 </head>
@@ -8,13 +9,13 @@
 
   <%- include('bar', {username: username}) %>
 
-  <div class='detail'>
-    <div class='title'><%= item.title %></div>
+  <div class="detail">
+    <div class="title"><%=item.title%></div>
     <div class='desc'>
-      <span>作者：<%= item.username %></span>
-      <span>发布时间：<%= item.timeZH %></span>    
+      <span>作者：<%=item.username%></span>
+      <span>发布时间：<%=item.time%></span>
     </div>
-    <div class='content'><%- item.content %></div>
+    <div class="content"><%-item.content%></div>
   </div>
 
 </body>
